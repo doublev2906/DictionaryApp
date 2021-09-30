@@ -25,6 +25,7 @@ import sample.model.Word;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -50,41 +51,27 @@ public class VocabularyStageController implements Initializable {
     @FXML
     public ListView<String> lv_list_vocab;
 
+    /**
+     * get list word from database
+     */
     public void initWords() {
-//        File file = new File("data.txt");
-//        var check = file.exists();
-//        words = new ArrayList<>();
-//        int count = 1;
-//        Scanner readFile = new Scanner(file);
-//        FileReader fileReader = new FileReader(file);
-//        LineNumberReader lineNumberReader = new LineNumberReader(fileReader);
-//        Word word = new Word();
-//        while (lineNumberReader.readLine() != null) {
-//
-//            var line = readFile.nextLine();
-//            if (count % 2 == 1) {
-//                word.setWordTarget(line);
-//            } else {
-//                word.setWordExplain(line);
-//                words.add(word);
-//                word = new Word();
-//            }
-//            count++;
-//
-//        }
-//
-//        readFile.close();
         words = manager.getListWord();
     }
 
+    /**
+     * set up list vocabulary
+     */
+
     private void setListView() {
+        //init list string english word
         ArrayList<String> vocab_en_words = new ArrayList<>();
         for (var i : words) {
             vocab_en_words.add(i.getWordTarget());
         }
+        //binding list to observablelist to listen listview change to display
         lv_word = FXCollections.observableList(vocab_en_words);
 
-//        IntStream.range(0, 1000).mapToObj(Integer::toString).forEach(lv_word::add);
+        //filter data when user find vocabulary
         FilteredList<String> filteredData = new FilteredList<>(lv_word, s -> true);
         lv_list_vocab.setItems(filteredData);
         tf_find_word.textProperty().addListener((observableValue, s, t1) -> {
@@ -95,34 +82,40 @@ public class VocabularyStageController implements Initializable {
                 filteredData.setPredicate(s1 -> s1.toLowerCase().startsWith(filter.toLowerCase()));
             }
         });
+
+        //init context menu to implement edit and delete vocabulary in listview
         ContextMenu contextMenu = new ContextMenu();
         MenuItem editItem = new MenuItem();
         editItem.textProperty().bind(Bindings.format("Edit"));
         MenuItem deleteItem = new MenuItem();
         deleteItem.textProperty().bind(Bindings.format("Delete"));
         contextMenu.getItems().addAll(editItem, deleteItem);
+
+        //set listview handler when click item
         lv_list_vocab.setOnMouseClicked(mouseEvent -> {
             int index = find(lv_list_vocab.getSelectionModel().getSelectedItem());
             String s = lv_list_vocab.getSelectionModel().getSelectedItem();
-//            ArrayList<String> list = (ArrayList<String>) lv_list_vocab.getItems();
             if (mouseEvent.getButton() == MouseButton.SECONDARY) {
+
+                //set action when edit item
                 editItem.setOnAction(actionEvent -> {
                     Word editWord = createDialog(words.get(index));
                     if (editWord != null) {
                         if (!words.get(index).getWordTarget().equals(editWord.getWordTarget())) {
                             words.set(index, editWord);
                             lv_word.set(index, editWord.getWordTarget());
-                            manager.update(index+1,editWord.getWordTarget(),editWord.getWordExplain());
+                            manager.update(index + 1, editWord.getWordTarget(), editWord.getWordExplain());
                             showAlert("Chỉnh sửa từ thành công");
                         }
                     }
 
 
                 });
+                //set action when delete item
                 deleteItem.setOnAction(actionEvent -> {
                     words.remove(index);
                     lv_word.remove(s);
-                    manager.delete(index+1);
+                    manager.delete(index + 1);
                     showAlert("Xóa từ thành công");
                 });
                 contextMenu.show(lv_list_vocab, mouseEvent.getScreenX(), mouseEvent.getScreenY());
@@ -185,11 +178,11 @@ public class VocabularyStageController implements Initializable {
         Optional<ButtonType> result = dialog.showAndWait();
 
         result.ifPresent(buttonType -> {
-            if(buttonType == okBtn){
+            if (buttonType == okBtn) {
                 check.set(true);
             }
         });
-        if(check.get()) return new Word(vocabulary.getText(),mean.getText());
+        if (check.get()) return new Word(vocabulary.getText(), mean.getText());
         else return null;
     }
 
@@ -210,7 +203,7 @@ public class VocabularyStageController implements Initializable {
         if (add_word != null) {
             words.add(add_word);
             lv_word.add(add_word.getWordTarget());
-            manager.insert(add_word.getWordTarget(),add_word.getWordExplain());
+            manager.insert(add_word.getWordTarget(), add_word.getWordExplain());
             showAlert("Thêm từ thành công!");
         }
 
@@ -236,7 +229,7 @@ public class VocabularyStageController implements Initializable {
     }
 
     public void back() throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("../fxml/menu.fxml"));
+        Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("../fxml/menu.fxml")));
         Scene scene = new Scene(root, 600, 400);
         Stage stage = (Stage) btn_back.getScene().getWindow();
         stage.setTitle("Dictionary");

@@ -68,12 +68,15 @@ public class TranslateController implements Initializable {
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                 }
+
                 URL url = null;
+
                 try {
                     url = new URL(urlStr);
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
                 }
+
                 StringBuilder response = new StringBuilder();
                 HttpURLConnection con = null;
                 try {
@@ -88,10 +91,10 @@ public class TranslateController implements Initializable {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                String inputLine = new String();
+                String inputLine = "";
                 while (true) {
                     try {
-                        if (!((inputLine = in.readLine()) != null)) break;
+                        if ((inputLine = in.readLine()) == null) break;
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -130,16 +133,31 @@ public class TranslateController implements Initializable {
                 txt_lan_source.setText("English");
                 txt_lan_target.setText("Vietnamese");
             }
+            String text = word_target.getText();
+            word_target.setText(word_translated.getText());
+            word_translated.setText(text);
+        });
+    }
+
+    public void setBtn_translateClick(){
+        btn_translate.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                try {
+                    if(txt_lan_source.getText().equals("English")){
+                        translate("vi","en");
+                    }else {
+                        translate("en","vi");
+                    }
+
+                } catch (IOException | ParseException | InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
         });
     }
 
 
-    @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
-        loading.setVisible(false);
-        speech();
-        setImg_changeClick();
-    }
 
     public void speech() {
         img_speech.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> {
@@ -157,4 +175,13 @@ public class TranslateController implements Initializable {
         alert.setContentText("Bạn chưa nhập gì mà :<");
         alert.showAndWait();
     }
+
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        loading.setVisible(false);
+        speech();
+        setImg_changeClick();
+        setBtn_translateClick();
+    }
+
 }

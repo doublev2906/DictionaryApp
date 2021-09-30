@@ -99,7 +99,7 @@ public class VocabularyStageController implements Initializable {
 
                 //set action when edit item
                 editItem.setOnAction(actionEvent -> {
-                    Word editWord = createDialog(words.get(index));
+                    Word editWord = getWordFromDialog(words.get(index));
                     if (editWord != null) {
                         if (!words.get(index).getWordTarget().equals(editWord.getWordTarget())) {
                             words.set(index, editWord);
@@ -142,7 +142,7 @@ public class VocabularyStageController implements Initializable {
         return -1;
     }
 
-    private Word createDialog(Word word) {
+    private Word getWordFromDialog(Word word) {
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setTitle("Dialog");
 
@@ -199,7 +199,7 @@ public class VocabularyStageController implements Initializable {
     }
 
     public void addWord() {
-        Word add_word = createDialog(null);
+        Word add_word = getWordFromDialog(null);
         if (add_word != null) {
             words.add(add_word);
             lv_word.add(add_word.getWordTarget());

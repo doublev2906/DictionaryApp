@@ -12,6 +12,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -40,9 +41,15 @@ public class TranslateController implements Initializable {
     public ProgressIndicator loading;
     @FXML
     public Button btn_translate;
+    @FXML
+    public ImageView img_change;
+    @FXML
+    public Text txt_lan_target;
+    @FXML
+    public Text txt_lan_source;
 
 
-    public void translate() throws IOException, ParseException, InterruptedException {
+    public void translate(String lan_target,String lan_source) throws IOException, ParseException, InterruptedException {
         String text = word_target.getText();
         if (text.equals("")) {
             showAlert();
@@ -56,8 +63,8 @@ public class TranslateController implements Initializable {
                 try {
                     urlStr = "https://script.google.com/macros/s/AKfycbwBBo3bAEC5aDzqDq1gYehfcUJShDDYU6hkpB4DJWl3kXBeURuq/exec" +
                             "?q=" + URLEncoder.encode(text, "UTF-8") +
-                            "&target=" + "vi" +
-                            "&source=" + "en";
+                            "&target=" + lan_target +
+                            "&source=" + lan_source;
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                 }
@@ -100,26 +107,6 @@ public class TranslateController implements Initializable {
             }
         }).start();
 
-//        String text = word_target.getText();
-//        HttpRequest request = HttpRequest.newBuilder()
-//                .uri(URI.create("https://google-translate1.p.rapidapi.com/language/translate/v2"))
-//                .header("content-type", "application/x-www-form-urlencoded")
-//                .header("accept-encoding", "application/gzip")
-//                .header("x-rapidapi-host", "google-translate1.p.rapidapi.com")
-//                .header("x-rapidapi-key", "cd524481ecmsh7215b6bc6fc25a1p1d91dfjsn958e0ab84964")
-//                .method("POST", HttpRequest.BodyPublishers.ofString("q="+text+"&target=vi&source=en"))
-//                .build();
-//
-//        HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
-//        JSONParser parser = new JSONParser();
-//        JSONObject resultObject = (JSONObject) parser.parse(response.body());
-//        JSONObject object1 = (JSONObject) resultObject.get("data");
-//        JSONArray array = (JSONArray) object1.get("translations");
-//        Object[] arrayList = array.toArray();
-////        JSONObject o = (JSONObject) object1.get("translations");
-//        JSONObject s = (JSONObject) array.get(0);
-//        String str = (String) s.get("translatedText");
-//        word_translated.setText(str);
 
     }
 
@@ -133,22 +120,33 @@ public class TranslateController implements Initializable {
         stage.show();
     }
 
+    public void setImg_changeClick(){
+        img_change.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> {
+            if(txt_lan_source.getText().equals("English")){
+                txt_lan_source.setText("Vietnamese");
+                txt_lan_target.setText("English");
+            }
+            else {
+                txt_lan_source.setText("English");
+                txt_lan_target.setText("Vietnamese");
+            }
+        });
+    }
+
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         loading.setVisible(false);
         speech();
+        setImg_changeClick();
     }
 
     public void speech() {
-        img_speech.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                System.setProperty("freetts.voices", "com.sun.speech.freetts.en.us.cmu_us_kal.KevinVoiceDirectory");
-                Voice voice = VoiceManager.getInstance().getVoice("kevin16");
-                voice.allocate();
-                voice.speak(word_target.getText());
-            }
+        img_speech.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> {
+            System.setProperty("freetts.voices", "com.sun.speech.freetts.en.us.cmu_us_kal.KevinVoiceDirectory");
+            Voice voice = VoiceManager.getInstance().getVoice("kevin16");
+            voice.allocate();
+            voice.speak(word_target.getText());
         });
     }
 

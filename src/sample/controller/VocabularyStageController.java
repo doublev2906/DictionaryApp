@@ -132,7 +132,7 @@ public class VocabularyStageController implements Initializable {
     }
 
     private int find(String text) {
-        return Collections.binarySearch(vocab_en_words,text);
+        return vocab_en_words.indexOf(text);
     }
 
     private Word getWordFromDialog(Word word) {

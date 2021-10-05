@@ -24,10 +24,7 @@ import sample.model.Word;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class VocabularyStageController implements Initializable {
@@ -35,6 +32,7 @@ public class VocabularyStageController implements Initializable {
     ArrayList<Word> words;
     ObservableList<String> lv_word;
     DatabaseManager manager;
+    ArrayList<String> vocab_en_words;
 
     @FXML
     public Button btn_back;
@@ -64,7 +62,7 @@ public class VocabularyStageController implements Initializable {
 
     private void setListView() {
         //init list string english word
-        ArrayList<String> vocab_en_words = new ArrayList<>();
+        vocab_en_words = new ArrayList<>();
         for (var i : words) {
             vocab_en_words.add(i.getWordTarget());
         }
@@ -134,12 +132,7 @@ public class VocabularyStageController implements Initializable {
     }
 
     private int find(String text) {
-        for (int i = 0; i < words.size(); i++) {
-            if (words.get(i).getWordTarget().equals(text)) {
-                return i;
-            }
-        }
-        return -1;
+        return Collections.binarySearch(vocab_en_words,text);
     }
 
     private Word getWordFromDialog(Word word) {

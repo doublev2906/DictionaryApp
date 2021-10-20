@@ -28,9 +28,9 @@ public class MenuController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
     }
-
+    //change to Translate stage
     public void changeTranslateStage() throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("../fxml/translate_stage.fxml"));
+        Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("../fxml/translate_stage.fxml")));
         Scene scene = new Scene(root, 600, 400);
         btn_translate.getScene();
         Stage stage = (Stage) btn_translate.getScene().getWindow();
@@ -38,7 +38,7 @@ public class MenuController implements Initializable {
         stage.setScene(scene);
         stage.show();
     }
-
+    //change to Vocabulary stage
     public void changeVocabularyStage() throws IOException {
         Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("../fxml/vocabulary_stage.fxml")));
         Scene scene = new Scene(root, 600, 400);
@@ -49,6 +49,7 @@ public class MenuController implements Initializable {
         stage.show();
     }
 
+    //exit program
     public void exit(ActionEvent actionEvent) {
         Stage stage = (Stage) btn_exit.getScene().getWindow();
         stage.close();

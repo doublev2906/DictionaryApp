@@ -27,6 +27,7 @@ import java.net.*;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
@@ -48,65 +49,34 @@ public class TranslateController implements Initializable {
     @FXML
     public Text txt_lan_source;
 
-
-    public void translate(String lan_target,String lan_source) throws IOException, ParseException, InterruptedException {
+    //Translate
+    public void translate(String lan_target,String lan_source) {
         String text = word_target.getText();
         if (text.equals("")) {
             showAlert();
             return;
         }
         loading.setVisible(true);
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                String urlStr = null;
-                try {
-                    urlStr = "https://script.google.com/macros/s/AKfycbwBBo3bAEC5aDzqDq1gYehfcUJShDDYU6hkpB4DJWl3kXBeURuq/exec" +
-                            "?q=" + URLEncoder.encode(text, "UTF-8") +
-                            "&target=" + lan_target +
-                            "&source=" + lan_source;
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
-
-                URL url = null;
-
-                try {
-                    url = new URL(urlStr);
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                }
-
+        new Thread(() -> {
+            try {
+                String urlStr = "https://script.google.com/macros/s/AKfycbwBBo3bAEC5aDzqDq1gYehfcUJShDDYU6hkpB4DJWl3kXBeURuq/exec" +
+                        "?q=" + URLEncoder.encode(text, StandardCharsets.UTF_8) +
+                        "&target=" + lan_target +
+                        "&source=" + lan_source;
+                URL url = new URL(urlStr);
                 StringBuilder response = new StringBuilder();
-                HttpURLConnection con = null;
-                try {
-                    con = (HttpURLConnection) url.openConnection();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                con.setRequestProperty("User-Agent", "Mozilla/5.0");
-                BufferedReader in = null;
-                try {
-                    in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                String inputLine = "";
-                while (true) {
-                    try {
-                        if ((inputLine = in.readLine()) == null) break;
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestProperty("User-Agent", "Mozilla/5.0");
+                BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                String inputLine;
+                while ((inputLine = in.readLine()) != null) {
                     response.append(inputLine);
                 }
-                try {
-                    in.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                in.close();
                 loading.setVisible(false);
                 word_translated.setText(response.toString());
+            } catch (IOException e){
+                e.printStackTrace();
             }
         }).start();
 
@@ -140,20 +110,13 @@ public class TranslateController implements Initializable {
     }
 
     public void setBtn_translateClick(){
-        btn_translate.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                try {
-                    if(txt_lan_source.getText().equals("English")){
-                        translate("vi","en");
-                    }else {
-                        translate("en","vi");
-                    }
-
-                } catch (IOException | ParseException | InterruptedException e) {
-                    e.printStackTrace();
-                }
+        btn_translate.setOnAction(actionEvent -> {
+            if(txt_lan_source.getText().equals("English")){
+                translate("vi","en");
+            }else {
+                translate("en","vi");
             }
+
         });
     }
 

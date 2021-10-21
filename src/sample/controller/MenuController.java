@@ -32,7 +32,6 @@ public class MenuController implements Initializable {
     public void changeTranslateStage() throws IOException {
         Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("../fxml/translate_stage.fxml")));
         Scene scene = new Scene(root, 600, 400);
-        btn_translate.getScene();
         Stage stage = (Stage) btn_translate.getScene().getWindow();
         stage.setTitle("Translate");
         stage.setScene(scene);
@@ -42,7 +41,6 @@ public class MenuController implements Initializable {
     public void changeVocabularyStage() throws IOException {
         Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("../fxml/vocabulary_stage.fxml")));
         Scene scene = new Scene(root, 600, 400);
-        btn_translate.getScene();
         Stage stage = (Stage) btn_translate.getScene().getWindow();
         stage.setTitle("Vocabulary");
         stage.setScene(scene);
